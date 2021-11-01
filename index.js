@@ -23,6 +23,7 @@ async function run(){
   await client.connect();
   const database = client.db('TravelHobe');
   const servicesCollection = database.collection('services');
+  const ordersCollection = database.collection('orders');
 
   // Get all data
   app.get('/services', async(req, res) => {
@@ -47,9 +48,32 @@ async function run(){
    console.log('hit the post api', service);
    
    const result = await servicesCollection.insertOne(service);
+   // console.log(result);
+   res.json(result);
+
+  });
+  // Post Api
+  app.post('/order', async(req, res)=> {
+   const service = req.body;
+   console.log('hit the post api', service);
+   
+   const result = await ordersCollection.insertOne(service);
    console.log(result);
    res.json(result);
 
+  });
+  // Get all data
+  app.get('/order', async(req, res) => {
+   const cursor = ordersCollection.find({});
+   const order = await cursor.toArray();
+   res.send(order);
+  });
+  app.delete('/order/:id', async(req, res) => {
+   const id = req.params.id;
+   const query = {_id:ObjectId(id)}
+   const result = await ordersCollection.deleteOne(query);
+   res.json(result);
+   console.log(result);
   });
  }
  finally{
